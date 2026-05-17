@@ -1,0 +1,8 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* අපිට ඕන වෙන custom styles ටිකක් */
+body {
+  background-color: #f3f4f6; /* ළා අළු පැහැති පසුබිමක් (Premium look) */
+}
