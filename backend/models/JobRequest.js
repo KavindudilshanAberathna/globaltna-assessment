@@ -42,7 +42,6 @@ const jobRequestSchema = new mongoose.Schema({
   }
 });
 
-// "jobRequests" ලෙස collection name එක හරියටම හැදෙන බව තහවුරු කිරීමට තුන්වන parameter එක භාවිතා කිරීම
 const JobRequest = mongoose.model('JobRequest', jobRequestSchema, 'jobRequests');
 
 export default JobRequest;
