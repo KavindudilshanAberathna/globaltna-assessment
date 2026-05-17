@@ -1,16 +1,21 @@
 import JobRequest from '../models/JobRequest.js';
 
-// @desc    Get all jobs (with category, status and keyword search)
+// @desc    Get all jobs (with pagination, category, status and keyword search)
 // @route   GET /api/jobs
 export const getJobs = async (req, res, next) => {
   try {
     const { category, status, search } = req.query;
+    
+    // Pagination
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 6;
+    const skip = (page - 1) * limit;
+
     let query = {};
 
     if (category) query.category = category;
     if (status) query.status = status;
     
-    // search 
     if (search) {
       query.$or = [
         { title: { $regex: search, $options: 'i' } },
@@ -18,8 +23,18 @@ export const getJobs = async (req, res, next) => {
       ];
     }
 
-    const jobs = await JobRequest.find(query).sort({ createdAt: -1 });
-    res.status(200).json(jobs);
+    // Total Maching Jobs
+    const total = await JobRequest.countDocuments(query);
+    
+    const jobs = await JobRequest.find(query).sort({ createdAt: -1 }).skip(skip).limit(limit);
+
+    // Pagination
+    res.status(200).json({
+      jobs,
+      currentPage: page,
+      totalPages: Math.ceil(total / limit),
+      totalJobs: total
+    });
   } catch (error) {
     next(error);
   }
