@@ -38,12 +38,21 @@ export default function CreateJob() {
 
     setLoading(true);
 
+    const token = localStorage.getItem('token');
+    if (!token) {
+      setError('You must be logged in to post a service request.');
+      setLoading(false);
+      return;
+    }
+
     try {
       const res = await fetch('http://localhost:5000/api/jobs', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
-      });
+        headers: { 'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify(formData),
+    });
 
       if (res.ok) {
         router.push('/');

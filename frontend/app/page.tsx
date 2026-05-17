@@ -10,6 +10,19 @@ export default function Home() {
   const [category, setCategory] = useState('');
   const [search, setSearch] = useState('');
 
+const [user, setUser] = useState<string | null>(null);
+
+useEffect(() => {
+  setUser(localStorage.getItem('userName'));
+}, []);
+
+const handleLogout = () => {
+  localStorage.removeItem('token');
+  localStorage.removeItem('userName');
+  setUser(null);
+  window.location.reload();
+};
+
   useEffect(() => {
     const fetchJobs = async () => {
       setLoading(true);
@@ -42,12 +55,31 @@ export default function Home() {
             <span className="text-xl">💼</span>
             <span className="font-extrabold text-slate-900 tracking-tight text-lg">GlobalTNA <span className="text-blue-600 font-medium">Board</span></span>
           </div>
-          <Link 
-            href="/create"
-            className="inline-flex items-center justify-center rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white shadow-xs hover:bg-blue-500 transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
-          >
-            + Post a Request
-          </Link>
+          
+          <div className="flex items-center gap-4">
+            {user ? (
+              <div className="flex items-center gap-3">
+                <span className="text-xs font-bold text-slate-600 bg-slate-100 px-2.5 py-1.5 rounded-lg">👋 {user}</span>
+                <button 
+                  onClick={handleLogout}
+                  className="text-xs font-bold text-rose-600 hover:text-rose-700 cursor-pointer"
+                >
+                  Logout
+                </button>
+              </div>
+            ) : (
+              <Link href="/login" className="text-xs font-bold text-slate-600 hover:text-slate-900">
+                Sign In
+              </Link>
+            )}
+            
+            <Link 
+              href="/create"
+              className="inline-flex items-center justify-center rounded-lg bg-blue-600 px-4 py-2 text-xs font-semibold text-white shadow-xs hover:bg-blue-500 transition-colors"
+            >
+              + Post a Request
+            </Link>
+          </div>
         </div>
       </div>
 
