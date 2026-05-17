@@ -9,19 +9,23 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const [category, setCategory] = useState('');
   const [search, setSearch] = useState('');
+  const [user, setUser] = useState<string | null>(null);
+  
+  // Mobile Menu 
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-const [user, setUser] = useState<string | null>(null);
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
 
-useEffect(() => {
-  setUser(localStorage.getItem('userName'));
-}, []);
+  useEffect(() => {
+    setUser(localStorage.getItem('userName'));
+  }, []);
 
-const handleLogout = () => {
-  localStorage.removeItem('token');
-  localStorage.removeItem('userName');
-  setUser(null);
-  window.location.reload();
-};
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('userName');
+    setUser(null);
+    window.location.reload();
+  };
 
   useEffect(() => {
     const fetchJobs = async () => {
@@ -36,7 +40,7 @@ const handleLogout = () => {
         const res = await fetch(url);
         const data = await res.json();
         setJobs(data);
-      }catch (error) {
+      } catch (error) {
         console.error("Error fetching jobs:", error);
       } finally {
         setLoading(false);
@@ -44,24 +48,27 @@ const handleLogout = () => {
     };
 
     fetchJobs();
-  }, [category , search]);
+  }, [category, search]);
 
   return (
     <main className="min-h-screen bg-slate-50/50 pb-16">
       {/* Top Professional Navbar */}
-      <div className="bg-white border-b border-slate-200/80 sticky top-0 z-40 backdrop-blur-md bg-white/90">
+      <div className="bg-white border-b border-slate-200/80 sticky top-0 z-40 backdrop-blur-md bg-white/90 relative">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <span className="text-xl">💼</span>
-            <span className="font-extrabold text-slate-900 tracking-tight text-lg">GlobalTNA <span className="text-blue-600 font-medium">Board</span></span>
+            <span className="font-extrabold text-slate-900 tracking-tight text-lg">
+              GlobalTNA <span className="text-blue-600 font-medium">Board</span>
+            </span>
           </div>
           
-          <div className="flex items-center gap-4">
+          {/* Desktop Menu */}
+          <div className="hidden md:flex items-center gap-4">
             {user ? (
               <div className="flex items-center gap-3">
                 <span className="text-xs font-bold text-slate-600 bg-slate-100 px-2.5 py-1.5 rounded-lg">👋 {user}</span>
                 <button 
-                  onClick={handleLogout}
+                  onClick={() => setShowLogoutModal(true)}
                   className="text-xs font-bold text-rose-600 hover:text-rose-700 cursor-pointer"
                 >
                   Logout
@@ -80,18 +87,100 @@ const handleLogout = () => {
               + Post a Request
             </Link>
           </div>
+
+          {/* Mobile Interactive Button (Hamburger or Avatar Initial Circle) */}
+          <div className="flex md:hidden">
+            {user ? (
+              // Avatar
+              <button
+                onClick={() => setIsMenuOpen(!isMenuOpen)}
+                className="w-9 h-9 rounded-full bg-blue-600 text-white font-black text-sm flex items-center justify-center border-2 border-white shadow-sm cursor-pointer uppercase focus:outline-none"
+              >
+                {user.charAt(0)}
+              </button>
+            ) : (
+
+              <button
+                onClick={() => setIsMenuOpen(!isMenuOpen)}
+                className="text-slate-600 hover:text-slate-900 focus:outline-none p-2 transition-colors rounded-lg hover:bg-slate-50"
+              >
+                {isMenuOpen ? (
+                  <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                ) : (
+                  <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
+                  </svg>
+                )}
+              </button>
+            )}
+          </div>
         </div>
+
+        {/* Mobile Floating Dropdown Menu */}
+        {isMenuOpen && (
+          <div className="absolute top-16 left-0 right-0 z-50 md:hidden bg-white/90 backdrop-blur-md border-b border-slate-200 px-6 py-6 space-y-4 shadow-xl animate-in fade-in slide-in-from-top-2 duration-200">
+            {user ? (
+              
+              <div className="flex flex-col items-center gap-2 text-center">
+                <div className="w-12 h-12 rounded-full bg-blue-50 border border-blue-100 flex items-center justify-center text-blue-600 font-black text-lg uppercase shadow-xs mb-1">
+                  {user.charAt(0)}
+                </div>
+                <span className="text-sm font-bold text-slate-700 mb-3">👋 {user}</span>
+                <button 
+                  onClick={() => {
+                    setIsMenuOpen(false);     
+                    setShowLogoutModal(true);  
+                  }}
+                  className="w-full text-center rounded-lg bg-rose-50 border border-rose-200 hover:bg-rose-100 text-rose-600 font-bold py-2.5 text-sm transition-colors cursor-pointer"
+                >
+                  Logout Account
+                </button>
+              </div>
+            ) : (
+             
+              <div className="flex flex-col gap-3">
+                <Link 
+                  href="/login" 
+                  className="block text-center rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2.5 text-sm transition-colors"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Sign In
+                </Link>
+                
+                <Link 
+                  href="/create" 
+                  className="block text-center rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white shadow-xs hover:bg-blue-500 transition-colors"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  + Post a Request
+                </Link>
+              </div>
+            )}
+          </div>
+        )}
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-10">
         {/* Welcome Section */}
-        <div className="mb-10">
+        <div className="mb-10 text-center md:text-left flex flex-col items-center md:items-start">
           <h1 className="text-3xl font-black text-slate-900 tracking-tight sm:text-4xl">
             Service Request Board
           </h1>
           <p className="mt-2 text-sm sm:text-base text-slate-500 max-w-2xl">
             Connecting homeowners with skilled tradespeople. Browse active maintenance requests or post a new job board entry.
           </p>
+          
+          {/* Logged in '+ Post a Request' Button */}
+          {user && (
+            <Link 
+              href="/create"
+              className="mt-5 inline-flex md:hidden items-center justify-center rounded-lg bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white shadow-xs hover:bg-blue-500 transition-colors w-full sm:w-auto"
+            >
+              + Post a Request
+            </Link>
+          )}
         </div>
 
         {/* Search & Filter Section */}
@@ -151,6 +240,34 @@ const handleLogout = () => {
           </div>
         )}
       </div>
+      {/* Logout Confirmation Modal */}
+      {showLogoutModal && (
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+          <div className="bg-white rounded-2xl p-6 sm:p-8 max-w-sm w-full shadow-2xl animate-in fade-in zoom-in-95 duration-200">
+            <div className="w-14 h-14 bg-rose-50 border border-rose-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <span className="text-2xl">🚪</span>
+            </div>
+            <h3 className="text-xl font-black text-center text-slate-900 mb-2">Logout Account?</h3>
+            <p className="text-center text-xs text-slate-400 mb-6 font-medium leading-relaxed">
+              Are you sure you want to log out of your account? You will need to sign in again to make administrative changes.
+            </p>
+            <div className="flex gap-3">
+              <button
+                onClick={() => setShowLogoutModal(false)}
+                className="flex-1 px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold rounded-lg transition-colors cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleLogout}
+                className="flex-1 px-4 py-2.5 bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold rounded-lg transition-colors text-center cursor-pointer"
+              >
+                Yes, Logout
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </main>
   );
 }
