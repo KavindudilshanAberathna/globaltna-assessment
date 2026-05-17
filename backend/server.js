@@ -3,6 +3,7 @@ import dotenv from 'dotenv';
 import cors from 'cors';
 import connectDB from './config/db.js';
 import jobRoutes from './routes/jobRoutes.js';
+import authRoutes from './routes/authRoutes.js';
 
 dotenv.config();
 
@@ -17,6 +18,7 @@ app.use(express.json()); // Body parser
 
 // Routes
 app.use('/api/jobs', jobRoutes);
+app.use('/api/auth', authRoutes);
 
 // 404 Not Found Middleware (Missing resources)
 app.use((req, res, next) => {

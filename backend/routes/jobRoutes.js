@@ -1,4 +1,6 @@
+import { protect } from '../middleware/authMiddleware.js';
 import express from 'express';
+
 import {
   getJobs,
   getJobById,
@@ -9,7 +11,7 @@ import {
 
 const router = express.Router();
 
-router.route('/').get(getJobs).post(createJob);
-router.route('/:id').get(getJobById).patch(updateJobStatus).delete(deleteJob);
+router.route('/').get(getJobs).post(protect,createJob);
+router.route('/:id').get(getJobById).patch(updateJobStatus).delete(protect,deleteJob);
 
 export default router;
