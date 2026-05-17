@@ -2,19 +2,17 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import JobCard from '../components/JobCard';
+import JobCard from './components/JobCard'; // අපි හදපු component එක
 
 export default function Home() {
   const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [category, setCategory] = useState('');
 
-  // Get Data From API
   useEffect(() => {
     const fetchJobs = async () => {
       setLoading(true);
       try {
-        // Filter By category using dropdown
         const url = category 
           ? `http://localhost:5000/api/jobs?category=${category}`
           : 'http://localhost:5000/api/jobs';
@@ -44,7 +42,6 @@ export default function Home() {
           </p>
         </div>
         
-        {/* New Job Post Button */}
         <Link 
           href="/create"
           className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg shadow-sm transition-colors"

@@ -1,8 +1,6 @@
 import Link from 'next/link';
 
-// Job description
 export default function JobCard({ job }: { job: any }) {
-  // Status color
   const statusColors = {
     'Open': 'bg-green-100 text-green-800',
     'In Progress': 'bg-yellow-100 text-yellow-800',
