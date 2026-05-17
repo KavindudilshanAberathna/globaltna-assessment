@@ -8,19 +8,22 @@ export default function Home() {
   const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [category, setCategory] = useState('');
+  const [search, setSearch] = useState('');
 
   useEffect(() => {
     const fetchJobs = async () => {
       setLoading(true);
       try {
-        const url = category 
-          ? `http://localhost:5000/api/jobs?category=${category}`
-          : 'http://localhost:5000/api/jobs';
+        let params = new URLSearchParams();
+        if (category) params.append('category', category);
+        if (search) params.append('search', search);
+        
+        const url = `http://localhost:5000/api/jobs?${params.toString()}`;
           
         const res = await fetch(url);
         const data = await res.json();
         setJobs(data);
-      } catch (error) {
+      }catch (error) {
         console.error("Error fetching jobs:", error);
       } finally {
         setLoading(false);
@@ -28,7 +31,7 @@ export default function Home() {
     };
 
     fetchJobs();
-  }, [category]);
+  }, [category , search]);
 
   return (
     <main className="min-h-screen bg-slate-50/50 pb-16">
@@ -59,15 +62,24 @@ export default function Home() {
           </p>
         </div>
 
-        {/* Filter Section */}
-        <div className="mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-4 rounded-xl border border-slate-200/60 shadow-xs">
-          <div className="flex items-center gap-3 w-full sm:w-auto">
-            <label htmlFor="category" className="text-sm font-bold text-slate-700 whitespace-nowrap">Filter Category</label>
+        {/* Search & Filter Section */}
+        <div className="mb-8 grid grid-cols-1 md:grid-cols-3 gap-4 bg-white p-4 rounded-xl border border-slate-200/60 shadow-xs">
+          <div className="md:col-span-2 relative">
+            <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">🔍</span>
+            <input 
+              type="text"
+              placeholder="Search requests by title or description..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="w-full pl-9 bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-lg focus:bg-white focus:ring-2 focus:ring-blue-500/10 focus:border-blue-500 p-2.5 outline-none transition-all font-medium"
+            />
+          </div>
+          <div className="flex items-center gap-3">
             <select 
               id="category"
               value={category}
               onChange={(e) => setCategory(e.target.value)}
-              className="w-full sm:w-48 bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-lg focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 block p-2.5 outline-none font-medium transition-all"
+              className="w-full bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-lg focus:bg-white focus:ring-2 focus:ring-blue-500/10 focus:border-blue-500 p-2.5 outline-none font-medium transition-all cursor-pointer"
             >
               <option value="">All Trades</option>
               <option value="Plumbing">🔧 Plumbing</option>
@@ -75,9 +87,6 @@ export default function Home() {
               <option value="Painting">🎨 Painting</option>
               <option value="Joinery">🔨 Joinery</option>
             </select>
-          </div>
-          <div className="text-xs text-slate-400 font-medium self-end sm:self-center">
-            Showing {jobs.length} active requests
           </div>
         </div>
 

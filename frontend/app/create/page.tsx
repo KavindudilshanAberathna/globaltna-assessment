@@ -134,7 +134,7 @@ export default function CreateJob() {
                   id="location"
                   value={formData.location}
                   onChange={handleChange}
-                  placeholder="e.g. Glasgow"
+                  placeholder="e.g. Nugegoda"
                   className="w-full bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-lg focus:bg-white focus:ring-2 focus:ring-blue-500/10 focus:border-blue-500 p-3 outline-none transition-all"
                 />
               </div>
@@ -148,7 +148,7 @@ export default function CreateJob() {
                   id="contactName"
                   value={formData.contactName}
                   onChange={handleChange}
-                  placeholder="John Doe"
+                  placeholder="Ajith Kumara"
                   className="w-full bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-lg focus:bg-white focus:ring-2 focus:ring-blue-500/10 focus:border-blue-500 p-3 outline-none transition-all"
                 />
               </div>
@@ -160,7 +160,7 @@ export default function CreateJob() {
                   id="contactEmail"
                   value={formData.contactEmail}
                   onChange={handleChange}
-                  placeholder="john@example.com"
+                  placeholder="ajithkumara97@gmail.com"
                   className="w-full bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-lg focus:bg-white focus:ring-2 focus:ring-blue-500/10 focus:border-blue-500 p-3 outline-none transition-all"
                 />
               </div>

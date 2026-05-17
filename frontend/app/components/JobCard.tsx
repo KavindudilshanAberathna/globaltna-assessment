@@ -15,6 +15,7 @@ export default function JobCard({ job }: { job: any }) {
   };
 
   return (
+    <Link href={`/jobs/${job._id}`}>
     <div className="group bg-white rounded-xl border border-slate-200/80 p-6 shadow-sm hover:shadow-md hover:border-blue-300 transition-all duration-300 flex flex-col justify-between min-h-[220px]">
       <div>
         <div className="flex justify-between items-start gap-4">
@@ -47,13 +48,13 @@ export default function JobCard({ job }: { job: any }) {
           </span>
         </div>
         
-        <Link 
-          href={`/jobs/${job._id}`}
-          className="inline-flex items-center font-semibold text-blue-600 hover:text-blue-700 transition-colors gap-0.5 group-hover:gap-1"
+        <span 
+          className="inline-flex items-center font-semibold text-blue-600 transition-colors gap-0.5 group-hover:gap-1"
         >
           Details <span>→</span>
-        </Link>
+        </span >
       </div>
     </div>
+    </Link>
   );
 }

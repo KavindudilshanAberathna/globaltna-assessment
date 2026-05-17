@@ -1,14 +1,22 @@
 import JobRequest from '../models/JobRequest.js';
 
-// @desc    Get all jobs (with category and status filters)
+// @desc    Get all jobs (with category, status and keyword search)
 // @route   GET /api/jobs
 export const getJobs = async (req, res, next) => {
   try {
-    const { category, status } = req.query;
+    const { category, status, search } = req.query;
     let query = {};
 
     if (category) query.category = category;
     if (status) query.status = status;
+    
+    // search 
+    if (search) {
+      query.$or = [
+        { title: { $regex: search, $options: 'i' } },
+        { description: { $regex: search, $options: 'i' } }
+      ];
+    }
 
     const jobs = await JobRequest.find(query).sort({ createdAt: -1 });
     res.status(200).json(jobs);

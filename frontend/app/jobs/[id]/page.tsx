@@ -7,7 +7,7 @@ import Link from 'next/link';
 export default function JobDetails() {
   const params = useParams();
   const router = useRouter();
-  const id = params?.id; // ID එක ලැබෙනකන් ආරක්ෂිතව බලා සිටීම
+  const id = params?.id;
 
   const [job, setJob] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -16,9 +16,10 @@ export default function JobDetails() {
   
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [statusMessage, setStatusMessage] = useState('');
 
   useEffect(() => {
-    let isMounted = true; // Component එක load වෙලාද කියලා බලන ක්‍රමය
+    let isMounted = true; // If Component load
 
     const fetchJob = async () => {
       if (!id) return;
@@ -37,7 +38,7 @@ export default function JobDetails() {
 
     fetchJob();
 
-    // Cleanup function එක
+    // Cleanup function
     return () => {
       isMounted = false;
     };
@@ -57,6 +58,8 @@ export default function JobDetails() {
       if (res.ok) {
         const updatedJob = await res.json();
         setJob(updatedJob);
+        setStatusMessage('Status updated successfully!');
+        setTimeout(() => setStatusMessage(''), 3000);
       } else {
         alert('Failed to update status');
       }
@@ -75,7 +78,7 @@ export default function JobDetails() {
       });
 
       if (res.ok) {
-        router.push('/'); 
+        router.push('/');
       } else {
         alert('Failed to delete job request');
         setIsDeleting(false);
@@ -217,6 +220,15 @@ export default function JobDetails() {
           </div>
         </div>
       )}
+      {/* Floating Success Notification Toast */}
+{statusMessage && (
+  <div className="fixed top-20 right-6 z-50 flex items-center gap-3 bg-white border border-emerald-100 shadow-xl shadow-emerald-500/10 rounded-xl px-5 py-3.5 text-slate-800 text-sm font-bold animate-in fade-in slide-in-from-top-4 duration-300">
+    <div className="w-5 h-5 rounded-full bg-emerald-50 border border-emerald-200 flex items-center justify-center shadow-xs">
+      <span className="text-emerald-600 text-xs">✓</span>
+    </div>
+    <span>{statusMessage}</span>
+  </div>
+)}
     </main>
   );
 }
