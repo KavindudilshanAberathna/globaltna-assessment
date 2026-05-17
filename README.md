@@ -9,7 +9,7 @@ This platform allows Sri Lankan homeowners to post home maintenance service requ
 # 🚀 Live Demo & Repository
 
 * **GitHub Repository:** `https://github.com/KavindudilshanAberathna`
-* **Live Demo:** `[Insert Deployment URL]`
+* **Live Demo:** `https://globaltna-assessment-hrxd.vercel.app/`
 
 ---
 
