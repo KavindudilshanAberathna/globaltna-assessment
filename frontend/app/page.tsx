@@ -9,6 +9,8 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const [category, setCategory] = useState('');
   const [search, setSearch] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
   const [user, setUser] = useState<string | null>(null);
   
   // Mobile Menu 
@@ -28,6 +30,10 @@ export default function Home() {
   };
 
   useEffect(() => {
+    setCurrentPage(1);
+  }, [category, search]);
+
+  useEffect(() => {
     const fetchJobs = async () => {
       setLoading(true);
       try {
@@ -35,11 +41,17 @@ export default function Home() {
         if (category) params.append('category', category);
         if (search) params.append('search', search);
         
-        const url = `http://localhost:5000/api/jobs?${params.toString()}`;
-          
+        params.append('page', currentPage.toString());
+        params.append('limit', '6');
+        
+        const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+        const url = `${apiBaseUrl}/api/jobs?${params.toString()}`;
+
         const res = await fetch(url);
         const data = await res.json();
-        setJobs(data);
+        
+        setJobs(data.jobs || []);
+        setTotalPages(data.totalPages || 1);
       } catch (error) {
         console.error("Error fetching jobs:", error);
       } finally {
@@ -48,7 +60,7 @@ export default function Home() {
     };
 
     fetchJobs();
-  }, [category, search]);
+  }, [category, search, currentPage]);
 
   return (
     <main className="min-h-screen bg-slate-50/50 pb-16">
@@ -164,7 +176,7 @@ export default function Home() {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-10">
         {/* Welcome Section */}
-        <div className="mb-10 text-center md:text-left flex flex-col items-center md:items-start">
+        <div className="mb-10 text-center flex flex-col items-center ">
           <h1 className="text-3xl font-black text-slate-900 tracking-tight sm:text-4xl">
             Service Request Board
           </h1>
@@ -268,6 +280,52 @@ export default function Home() {
           </div>
         </div>
       )}
+      {/* Pagination Controls with Smooth Scroll */}
+        {totalPages > 1 && (
+          <div className="mt-7 flex items-center justify-center gap-2 border-t border-slate-200/60 pt-6">
+            <button
+              disabled={currentPage === 1}
+              onClick={() => {
+                setCurrentPage(currentPage - 1);
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }}
+              className="px-3 py-2 text-xs font-bold text-slate-600 bg-white border border-slate-200 rounded-lg hover:bg-slate-50 disabled:opacity-40 disabled:hover:bg-white transition-colors cursor-pointer"
+            >
+              ← Prev
+            </button>
+
+            {[...Array(totalPages)].map((_, index) => {
+              const pageNumber = index + 1;
+              return (
+                <button
+                  key={pageNumber}
+                  onClick={() => {
+                    setCurrentPage(pageNumber);
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  }}
+                  className={`w-9 h-9 text-xs font-bold rounded-lg transition-all cursor-pointer ${
+                    currentPage === pageNumber
+                      ? 'bg-blue-600 text-white shadow-sm'
+                      : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50'
+                  }`}
+                >
+                  {pageNumber}
+                </button>
+              );
+            })}
+
+            <button
+              disabled={currentPage === totalPages}
+              onClick={() => {
+                setCurrentPage(currentPage + 1);
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }}
+              className="px-3 py-2 text-xs font-bold text-slate-600 bg-white border border-slate-200 rounded-lg hover:bg-slate-50 disabled:opacity-40 disabled:hover:bg-white transition-colors cursor-pointer"
+            >
+              Next →
+            </button>
+          </div>
+        )}
     </main>
   );
 }

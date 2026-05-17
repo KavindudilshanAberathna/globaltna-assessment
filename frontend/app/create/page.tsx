@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter as useNextRouter } from 'next/navigation';
 import Link from 'next/link';
 
@@ -16,6 +16,14 @@ export default function CreateJob() {
   });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [showAuthWarning, setShowAuthWarning] = useState(false);
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      setShowAuthWarning(true);
+    }
+  }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     setFormData({ ...formData, [e.target.id]: e.target.value });
@@ -40,13 +48,15 @@ export default function CreateJob() {
 
     const token = localStorage.getItem('token');
     if (!token) {
-      setError('You must be logged in to post a service request.');
+      setShowAuthWarning(true);
       setLoading(false);
       return;
     }
 
+    const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+
     try {
-      const res = await fetch('http://localhost:5000/api/jobs', {
+      const res = await fetch(`${apiBaseUrl}/api/jobs`,{
         method: 'POST',
         headers: { 'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}`
@@ -185,6 +195,39 @@ export default function CreateJob() {
           </form>
         </div>
       </div>
+
+      {/* Custom Action Restricted Warning Modal */}
+      {showAuthWarning && (
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+          <div className="bg-white rounded-2xl p-6 sm:p-8 max-w-sm w-full shadow-2xl animate-in fade-in zoom-in-95 duration-200">
+            <div className="w-14 h-14 bg-amber-50 border border-amber-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <span className="text-2xl">🔒</span>
+            </div>
+            <h3 className="text-xl font-black text-center text-slate-900 mb-2">Action Restricted</h3>
+            <p className="text-center text-xs text-slate-400 mb-6 font-medium leading-relaxed">
+              You must be signed in to post a new service request entry on the board.
+            </p>
+            <div className="flex gap-3">
+              <button
+                type="button"
+                onClick={() => {
+                  setShowAuthWarning(false);
+                  router.push('/');
+                }}
+                className="flex-1 px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold rounded-lg transition-colors cursor-pointer"
+              >
+                Close
+              </button>
+              <Link
+                href="/login"
+                className="flex-1 px-4 py-2.5 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold rounded-lg text-center transition-colors"
+              >
+                Sign In
+              </Link>
+            </div>
+          </div>
+        </div>
+      )}
     </main>
   );
 }

@@ -25,7 +25,8 @@ export default function JobDetails() {
     const fetchJob = async () => {
       if (!id) return;
       try {
-        const res = await fetch(`http://localhost:5000/api/jobs/${id}`);
+        const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+        const res = await fetch(`${apiBaseUrl}/api/jobs/${id}`);
         if (!res.ok) throw new Error('Job request not found');
         const data = await res.json();
         
@@ -56,9 +57,11 @@ export default function JobDetails() {
 
     const newStatus = e.target.value;
     setUpdating(true);
+
+    const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
     
     try {
-      const res = await fetch(`http://localhost:5000/api/jobs/${id}`, {
+      const res = await fetch(`${apiBaseUrl}/api/jobs/${id}`, {
         method: 'PATCH',
         headers: { 
           'Content-Type': 'application/json',
@@ -101,8 +104,11 @@ export default function JobDetails() {
       setShowDeleteModal(false);
       return;
     }
+
+    const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+
     try {
-      const res = await fetch(`http://localhost:5000/api/jobs/${id}`, {
+      const res = await fetch(`${apiBaseUrl}/api/jobs/${id}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`
